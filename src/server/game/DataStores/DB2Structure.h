@@ -1132,6 +1132,13 @@ struct CreatureFamilyEntry
     std::array<int16, 2> SkillLine;
 };
 
+struct CreatureLabelEntry
+{
+    uint32 ID;
+    int32 LabelID;
+    uint32 CreatureDifficultyID;
+};
+
 struct CreatureModelDataEntry
 {
     uint32 ID;
@@ -1380,6 +1387,9 @@ struct CriteriaEntry
 
         // CriteriaType::MythicPlusRatingAttained                   = 230
         int32 DungeonScore;
+
+        // CriteriaType::LearnTaxiNode                              = 262
+        int32 TaxiNodesID;
     } Asset;
     uint32 ModifierTreeId;
     int32 StartEvent;
@@ -1802,6 +1812,13 @@ struct GameObjectDisplayInfoEntry
     int32 AlternateDisplayType;
     int32 ClientCreatureDisplayInfoID;
     int32 ClientItemID;
+};
+
+struct GameObjectLabelEntry
+{
+    uint32 ID;
+    int32 LabelID;
+    uint32 GameObjectID;
 };
 
 struct GameObjectsEntry
@@ -3032,7 +3049,7 @@ struct MountEntry
     int32 MountSpecialRiderAnimKitID;
     int32 MountSpecialSpellVisualKitID;
 
-    bool IsSelfMount() const { return (Flags & MOUNT_FLAG_SELF_MOUNT) != 0; }
+    EnumFlag<MountFlags> GetFlags() const { return static_cast<MountFlags>(Flags); }
 };
 
 struct MountCapabilityEntry
@@ -3047,6 +3064,15 @@ struct MountCapabilityEntry
     int16 ReqMapID;
     int32 PlayerConditionID;
     int32 FlightCapabilityID;
+};
+
+struct MountEquipmentEntry
+{
+    uint32 ID;
+    int32 Item;
+    int32 BuffSpell;
+    int32 Unknown820;
+    uint32 LearnedBySpell;
 };
 
 struct MountTypeXCapabilityEntry

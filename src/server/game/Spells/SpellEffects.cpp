@@ -357,7 +357,7 @@ NonDefaultConstructible<SpellEffectHandlerFn> SpellEffectHandlers[TOTAL_SPELL_EF
     &Spell::EffectLearnAzeriteEssencePower,                 //265 SPELL_EFFECT_LEARN_AZERITE_ESSENCE_POWER
     &Spell::EffectNULL,                                     //266 SPELL_EFFECT_SET_ITEM_BONUS_LIST_GROUP_ENTRY
     &Spell::EffectCreatePrivateConversation,                //267 SPELL_EFFECT_CREATE_PRIVATE_CONVERSATION
-    &Spell::EffectNULL,                                     //268 SPELL_EFFECT_APPLY_MOUNT_EQUIPMENT
+    &Spell::EffectApplyMountEquipment,                      //268 SPELL_EFFECT_APPLY_MOUNT_EQUIPMENT
     &Spell::EffectNULL,                                     //269 SPELL_EFFECT_INCREASE_ITEM_BONUS_LIST_GROUP_STEP
     &Spell::EffectNULL,                                     //270 SPELL_EFFECT_270
     &Spell::EffectUnused,                                   //271 SPELL_EFFECT_APPLY_AREA_AURA_PARTY_NONRANDOM
@@ -405,6 +405,8 @@ NonDefaultConstructible<SpellEffectHandlerFn> SpellEffectHandlers[TOTAL_SPELL_EF
     &Spell::EffectNULL,                                     //313 SPELL_EFFECT_CHANGE_ITEM_BONUSES_2
     &Spell::EffectNULL,                                     //314 SPELL_EFFECT_ADD_SOCKET_BONUS
     &Spell::EffectNULL,                                     //315 SPELL_EFFECT_LEARN_TRANSMOG_APPEARANCE_FROM_ITEM_MOD_APPEARANCE_GROUP
+    &Spell::EffectKillCreditLabel,                          //316 SPELL_EFFECT_KILL_CREDIT_LABEL_1
+    &Spell::EffectKillCreditLabel,                          //317 SPELL_EFFECT_KILL_CREDIT_LABEL_2
 };
 
 void Spell::EffectNULL()
@@ -4780,6 +4782,16 @@ void Spell::EffectKillCredit()
         unitTarget->ToPlayer()->RewardPlayerAndGroupAtEvent(creatureEntry, unitTarget);
 }
 
+void Spell::EffectKillCreditLabel()
+{
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
+        return;
+    Player* playerTarget = Object::ToPlayer(unitTarget);
+    if (!playerTarget)
+        return;
+    playerTarget->UpdateQuestObjectiveProgress(QUEST_OBJECTIVE_KILL_WITH_LABEL, effectInfo->MiscValue, std::max(1, effectInfo->MiscValueB));
+}
+
 void Spell::EffectQuestFail()
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
@@ -5938,6 +5950,37 @@ void Spell::EffectCreatePrivateConversation()
         return;
 
     Conversation::CreateConversation(effectInfo->MiscValue, unitTarget, destTarget->GetPosition(), unitTarget->GetGUID(), GetSpellInfo());
+}
+
+void Spell::EffectApplyMountEquipment()
+{
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
+        return;
+    Player* playerTarget = unitTarget->ToPlayer();
+    if (!playerTarget)
+        return;
+    for (MountEquipmentEntry const* mountEquipment : sMountEquipmentStore)
+    {
+        if (mountEquipment->LearnedBySpell == effectInfo->TriggerSpell)
+        {
+            playerTarget->LearnSpell(mountEquipment->LearnedBySpell, false, 0, true);
+            Unit::AuraEffectList const& mountAuras = playerTarget->GetAuraEffectsByType(SPELL_AURA_MOUNTED);
+            if (!mountAuras.empty())
+                if (MountEntry const* mountEntry = sDB2Manager.GetMount(mountAuras.front()->GetId()))
+                    if (!mountEntry->GetFlags().HasFlag(MountFlags::MountEquipmentEffectsSuppressed))
+                        playerTarget->CastSpell(playerTarget, mountEquipment->BuffSpell, true);
+        }
+        else
+        {
+            playerTarget->RemoveOwnedAura(mountEquipment->BuffSpell);
+            playerTarget->RemoveSpell(mountEquipment->LearnedBySpell, false, false, true);
+        }
+    }
+    WorldPackets::Spells::ApplyMountEquipmentResult applyMountEquipmentResult;
+    applyMountEquipmentResult.ItemGUID = m_castItemGUID;
+    applyMountEquipmentResult.ItemID = m_castItemEntry;
+    applyMountEquipmentResult.Result = WorldPackets::Spells::ApplyMountEquipmentResult::Success;
+    playerTarget->SendDirectMessage(applyMountEquipmentResult.Write());
 }
 
 void Spell::EffectSendChatMessage()

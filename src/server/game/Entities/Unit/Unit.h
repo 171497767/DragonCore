@@ -35,6 +35,7 @@
 
 #define VISUAL_WAYPOINT 1 // Creature Entry ID used for waypoints show, visible only for GMs
 #define WORLD_TRIGGER 12999
+#define SPELL_DAZED 1604
 #define ARTIFACTS_ALL_WEAPONS_GENERAL_WEAPON_EQUIPPED_PASSIVE 197886
 #define SPELL_DH_DOUBLE_JUMP 196055
 #define DISPLAYID_HIDDEN_MOUNT 73200
@@ -934,6 +935,7 @@ class TC_GAME_API Unit : public WorldObject
         void SetCosmeticMountDisplayId(uint32 mountDisplayId) { SetUpdateFieldValue(m_values.ModifyValue(&Unit::m_unitData).ModifyValue(&UF::UnitData::CosmeticMountDisplayID), mountDisplayId); }
         void Mount(uint32 mount, uint32 vehicleId = 0, uint32 creatureEntry = 0);
         void Dismount();
+        void CancelMountAura(bool force = false);
         MountCapabilityEntry const* GetMountCapability(uint32 mountType) const;
         void UpdateMountCapability();
 
@@ -1528,6 +1530,8 @@ class TC_GAME_API Unit : public WorldObject
 
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(*m_unitData->ShapeshiftForm); }
         void SetShapeshiftForm(ShapeshiftForm form);
+        void CancelShapeshift(bool onlyTravelShapeshiftForm = false, bool force = false);
+        void CancelTravelShapeshift(bool force = false) { CancelShapeshift(true, force); };
 
         bool IsInFeralForm() const;
 

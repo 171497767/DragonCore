@@ -1557,6 +1557,17 @@ struct CreatureFamilyLoadInfo
     static constexpr DB2LoadInfo Instance{ Fields, 11, &CreatureFamilyMeta::Instance, HOTFIX_SEL_CREATURE_FAMILY };
 };
 
+struct CreatureLabelLoadInfo
+{
+    static constexpr DB2FieldMeta Fields[3] =
+    {
+        { false, FT_INT, "ID" },
+        { true, FT_INT, "LabelID" },
+        { false, FT_INT, "CreatureDifficultyID" },
+    };
+    static constexpr DB2LoadInfo Instance{ Fields, 3, &CreatureLabelMeta::Instance, HOTFIX_SEL_CREATURE_LABEL };
+};
+
 struct CreatureModelDataLoadInfo
 {
     static constexpr DB2FieldMeta Fields[40] =
@@ -2115,6 +2126,17 @@ struct GameobjectDisplayInfoLoadInfo
     };
 
     static constexpr DB2LoadInfo Instance{ Fields, 14, &GameObjectDisplayInfoMeta::Instance, HOTFIX_SEL_GAMEOBJECT_DISPLAY_INFO };
+};
+
+struct GameobjectLabelLoadInfo
+{
+    static constexpr DB2FieldMeta Fields[3] =
+    {
+        { false, FT_INT, "ID" },
+        { true, FT_INT, "LabelID" },
+        { false, FT_INT, "GameObjectID" },
+    };
+    static constexpr DB2LoadInfo Instance{ Fields, 3, &GameObjectLabelMeta::Instance, HOTFIX_SEL_GAMEOBJECT_LABEL };
 };
 
 struct GameobjectsLoadInfo
@@ -4042,6 +4064,19 @@ struct MountCapabilityLoadInfo
     };
 
     static constexpr DB2LoadInfo Instance{ Fields, 10, &MountCapabilityMeta::Instance, HOTFIX_SEL_MOUNT_CAPABILITY };
+};
+
+struct MountEquipmentLoadInfo
+{
+    static constexpr DB2FieldMeta Fields[5] =
+    {
+        { false, FT_INT, "ID" },
+        { true, FT_INT, "Item" },
+        { true, FT_INT, "BuffSpell" },
+        { true, FT_INT, "Unknown820" },
+        { false, FT_INT, "LearnedBySpell" },
+    };
+    static constexpr DB2LoadInfo Instance{ Fields, 5, &MountEquipmentMeta::Instance, HOTFIX_SEL_MOUNT_EQUIPMENT };
 };
 
 struct MountTypeXCapabilityLoadInfo

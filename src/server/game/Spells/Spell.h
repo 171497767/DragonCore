@@ -372,6 +372,7 @@ class TC_GAME_API Spell
         void EffectUnlockGuildVaultTab();
         void EffectKillCreditPersonal();
         void EffectKillCredit();
+        void EffectKillCreditLabel();
         void EffectQuestFail();
         void EffectQuestStart();
         void EffectRedirectThreat();
@@ -427,6 +428,7 @@ class TC_GAME_API Spell
         void EffectRespecAzeriteEmpoweredItem();
         void EffectLearnAzeriteEssencePower();
         void EffectCreatePrivateConversation();
+        void EffectApplyMountEquipment();
         void EffectSendChatMessage();
         void EffectGrantBattlePetExperience();
         void EffectLearnTransmogIllusion();
